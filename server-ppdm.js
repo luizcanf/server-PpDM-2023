@@ -4,28 +4,38 @@ const fs = require("fs")
 app.use(express.urlencoded({ extended: true }))
 
 app.post('/', (req, res) => {
-    /*Nome, Sobrenome, CPF, RG, E-mail, Telefone, Profissão,
-     Cidade, Senha
-Data de Nascimento
-Estado*/
-    const dados = JSON.stringify(req.body)
-    const nomeArq = `${req.body.email}.json`
-    fs.writeFileSync(nomeArq, dados)
+    let usuario = {}
+    usuario.nome = req.body.nome
+    usuario.sobrenome = req.body.sobrenome
+    usuario.dtNascimento = req.body.dtNascimento
+    usuario.cpf = req.body.cpf
+    usuario.rg = req.body.rg
+    usuario.email = req.body.email
+    usuario.senha = req.body.senha
+    usuario.telefone = req.body.telefone
+    usuario.cidade = req.body.cidade
+    usuario.uf = req.body.uf
+    const registro = JSON.stringify(usuario)
+    const nomeArquivo = `${usuario.email}.json`
+    fs.writeFileSync(nomeArquivo, registro)
     res.send({msg: "Usuário cadastrado com sucesso."});
 })
 
 app.get('/lista', (req, res) => {
     fs.readdir(__dirname, (err, files) => {
-        if (err) console.log(err);
-        var newfiles = files.filter(data => data.includes('.json'))
-        console.log(newfiles);
-        res.send({ usuarios: newfiles })
+        if (err) {
+            console.log(err);
+            res.send({erro: true, msg: "Erro ao acessar a lista de usuários."});
+        } else {
+            var registros = files.filter(data => data.includes('.json'))
+            res.send({ usuarios: registros })
+        }
     })
 })
 
 app.get('/delete/:email', (req, res) => {
-    var dados = req.params.email
-    fs.unlinkSync(dados)
+    var usuario = req.params.email
+    fs.unlinkSync(`${usuario}.json`)
     res.send({msg: "Usuário cadastrado com sucesso."})
 })
 
