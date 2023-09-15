@@ -3,7 +3,7 @@ const app = express()
 const fs = require("fs")
 app.use(express.urlencoded({ extended: true }))
 
-app.post('/', (req, res) => {
+app.post('/cadastraUsuario', (req, res) => {
     let usuario = {}
     usuario.nome = req.body.nome
     usuario.sobrenome = req.body.sobrenome
