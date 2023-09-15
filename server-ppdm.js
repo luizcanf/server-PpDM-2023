@@ -2,6 +2,7 @@ const express = require('express');
 const app = express()
 const fs = require("fs")
 app.use(express.urlencoded({ extended: true }))
+const pasta = 'cadastroUsuario'
 
 app.post('/cadastraUsuario', (req, res) => {
     let usuario = {}
@@ -16,7 +17,7 @@ app.post('/cadastraUsuario', (req, res) => {
     usuario.cidade = req.body.cidade
     usuario.uf = req.body.uf
     const registro = JSON.stringify(usuario)
-    const nomeArquivo = `${usuario.email}.json`
+    const nomeArquivo = `${pasta}/${usuario.email}.json`
     fs.writeFileSync(nomeArquivo, registro)
     res.send({msg: "Usuário cadastrado com sucesso."});
 })
