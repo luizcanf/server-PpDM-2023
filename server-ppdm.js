@@ -19,11 +19,12 @@ app.post('/cadastraUsuario', (req, res) => {
     const registro = JSON.stringify(usuario)
     const nomeArquivo = `${pasta}/${usuario.email}.json`
     fs.writeFileSync(nomeArquivo, registro)
+    console.log(`Requisição de ${usuario.nome} gravada com sucesso.`);
     res.send({msg: "Usuário cadastrado com sucesso."});
 })
 
 app.get('/lista', (req, res) => {
-    fs.readdir(__dirname, (err, files) => {
+    fs.readdir(pasta, (err, files) => {
         if (err) {
             console.log(err);
             res.send({erro: true, msg: "Erro ao acessar a lista de usuários."});
@@ -36,8 +37,18 @@ app.get('/lista', (req, res) => {
 
 app.get('/delete/:email', (req, res) => {
     var usuario = req.params.email
-    fs.unlinkSync(`${usuario}.json`)
-    res.send({msg: "Usuário cadastrado com sucesso."})
+    fs.unlinkSync(`${pasta}/${usuario}.json`)
+    res.send({msg: "Usuário apagado com sucesso."})
+})
+
+app.get('/usuario/:email', (req, res) => {
+    const nomeArquivo = `${pasta}/${req.params.email}.json`
+    if (fs.existsSync(nomeArquivo)) {
+        const usuario = JSON.parse(fs.readFileSync(nomeArquivo).toString())
+        res.send(usuario)
+    } else {
+        res.send({erro: true, msg: "Usuário não cadastrado."})
+    }
 })
 
 port = 8080
