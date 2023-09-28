@@ -27,7 +27,7 @@ app.get('/lista', (req, res) => {
     fs.readdir(pasta, (err, files) => {
         if (err) {
             console.log(err);
-            res.send({erro: true, msg: "Erro ao acessar a lista de usuários."});
+            res.send({ erro: true, msg: "Erro ao acessar a lista de usuários." });
         } else {
             var registros = files.filter(data => data.includes('.json'))
             res.send({ usuarios: registros })
@@ -38,16 +38,26 @@ app.get('/lista', (req, res) => {
 app.get('/delete/:email', (req, res) => {
     var usuario = req.params.email
     fs.unlinkSync(`${pasta}/${usuario}.json`)
-    res.send({msg: "Usuário apagado com sucesso."})
+    res.send({ msg: "Usuário cadastrado com sucesso." })
 })
 
-app.get('/usuario/:email', (req, res) => {
-    const nomeArquivo = `${pasta}/${req.params.email}.json`
-    if (fs.existsSync(nomeArquivo)) {
-        const usuario = JSON.parse(fs.readFileSync(nomeArquivo).toString())
+app.post('/login', (req, res) => {
+    const email = req.body.email
+    const senha = req.body.senha
+    let usuario
+    let files = fs.readdirSync(pasta, { withFileTypes: true })
+    files.forEach(file => {
+        let dados = fs.readFileSync(`${pasta}/${file}`)
+        let conferencia = JSON.parse(dados)
+        if (conferencia.email == email && conferencia.senha == senha) {
+            usuario = {...conferencia}
+            console.log(`Login de ${usuario.nome} realizado com sucesso.`);
+        }
+    })
+    if (usuario) {
         res.send(usuario)
     } else {
-        res.send({erro: true, msg: "Usuário não cadastrado."})
+        res.send({ encontrado: false, msg: 'Usuário/senha incorretos.' })
     }
 })
 
